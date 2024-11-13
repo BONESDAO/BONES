@@ -1,0 +1,4 @@
+const express=require("express");const pool=require("../config");const router=express.Router();router.post("/getDruminfo",(req,res)=>{console.log("req.body:",req.body);const{dlevel}=req.body;pool.getConnection((err,connection)=>{if(err){console.log("err:",err);return res.status(500).json({success:false,message:err.message});}
+const results=[];const queryLevels=(level)=>{if(level>dlevel){return res.json({success:true,data:results});}
+const sql="SELECT dname, dlmage FROM drums WHERE dlevel = ?";connection.query(sql,[level],(err,queryResults)=>{if(err){console.log("err:",err);return res.status(500).json({success:false,message:err.message});}
+results.push(...queryResults);queryLevels(level+1);});};queryLevels(1);pool.releaseConnection(connection);});});module.exports=router;
